@@ -8,7 +8,11 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.LoadableComponent;
 import org.testng.Assert;
 
-
+/**
+ * CheckokutPage Object
+ * Contains elements and methods to interact with checkout page of JungleSocks
+ *
+ */
 public class CheckoutPage extends LoadableComponent<CheckoutPage> {
     
     @FindBy(id = "subtotal")
@@ -26,7 +30,6 @@ public class CheckoutPage extends LoadableComponent<CheckoutPage> {
 //		driver = new FirefoxDriver();
 		PageFactory.initElements(driver, this);
 	}
-	
 	
     @Override
 	protected void load() {
@@ -52,13 +55,5 @@ public class CheckoutPage extends LoadableComponent<CheckoutPage> {
 
 	public String getTitle() {
 		return driver.getTitle();
-	}
-
-	public void refreshPage() {
-		driver.navigate().refresh();
-	}
-	
-	public void back() {
-		driver.navigate().back();
 	}
 }

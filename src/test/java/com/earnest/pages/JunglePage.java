@@ -14,30 +14,34 @@ import org.testng.Assert;
 
 import com.earnest.pages.Browser;
 
+/**
+ * JunglePage Object
+ * Contains elements and methods to interact with data input page of JungleSocks
+ *
+ */
 
 public class JunglePage extends LoadableComponent<JunglePage> {
 	
 	private WebDriver driver;
     // This does not work due to element with the same id being hidden
 	//@FindBy(id = "line_item_name_giraffe")
-	
 	@FindBy(xpath = "//tr[5]/td[4]/input")
 	private WebElement giraffeTextBox;
+	
 	@FindBy(xpath = "//tr[3]/td[4]/input")
 	private WebElement lionTextBox;
-	
 	
 	@FindBy(name = "commit")
 	WebElement checkoutButton;
 	private String url = "https://jungle-socks.herokuapp.com/";
 	private static String title = "JungleSocks";
 
+	// Drop down menu of states
 	Select selectState;
 	
 	public JunglePage(WebDriver driver) {
 		this.driver = driver;
 		PageFactory.initElements(driver, this);
-		// Initialize variable
 	}
 	
 	 @Override
@@ -71,7 +75,6 @@ public class JunglePage extends LoadableComponent<JunglePage> {
 	}
 	
 	public List <String> getAllStates () {
-		
 		selectState = new Select(driver.findElement(By.name("state")));
         List <WebElement> allStates = selectState.getOptions();
         List <String> stateStrings = new ArrayList <String>() ;
@@ -79,7 +82,7 @@ public class JunglePage extends LoadableComponent<JunglePage> {
         	String oneState = element.getText().toString();
         	if (oneState.length() != 0) {
         		stateStrings.add(oneState);
-        	}   	
+        	}
         }
 		return stateStrings;
 	}

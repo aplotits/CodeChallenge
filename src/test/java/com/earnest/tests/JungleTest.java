@@ -1,5 +1,8 @@
 package com.earnest.tests;
 
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeClass;
+import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
@@ -17,24 +20,46 @@ public class JungleTest {
 	// North Dakota miscalculates tax
 	// Quantity 50000 causes "java.lang.NumberFormatException: For input string: "1,000,034.00" "
 	
-	final static String ORDER_QUANTITY_ZERO = "0";
 	final static String ORDER_QUANTITY_ONE = "1";
 	final static String ORDER_QUANTITY_TWO = "2";
 	final static String ORDER_QUANTITY_LIMIT = "50000";
-	final static String ORDER_QUANTITY_NEGATIVE = "-1";
 	
+	JunglePage jungle = new JunglePage(Browser.driver());
 	
+	@BeforeClass
+	public void setJungle() {
+		jungle.get();
+	}
+	
+	@AfterClass
+	public void closeJungle() {
+		Browser.close();
+	}
 	SoftAssert softAssert = new SoftAssert();
 	List <String> allStates = new ArrayList <String>();
 	
+	// Using data provider for zero and negative input values
+	@DataProvider
+	  public Object[][] testData() {
+	    return new Object[][] {
+	        new Object[] { "0"},
+	        new Object[] { "-2"}};
+	  }
+	
+	@Test(dataProvider = "testData")
+	public void zeroAndNegative(String quantity) {
+		List <String> someStates = new ArrayList <String>();
+		someStates.add("California");
+		someStates.add("North Dakota");
+		someStates.add("Alabama");
+		testSteps(jungle, someStates, quantity);
+		
+	}
 	
 	@Test()
 	public void testAllStates() {
-		String quantity = ORDER_QUANTITY_TWO;
 		try {
 			String giraffeQuantity = ORDER_QUANTITY_TWO;
-			JunglePage jungle = new JunglePage(Browser.driver());
-			jungle.get();
 			List <String> allStates = jungle.getAllStates();
 			for (String oneState: allStates) {
 				jungle.enterGiraffeQuantity(giraffeQuantity);
@@ -47,52 +72,23 @@ public class JungleTest {
 						total ,oneState + ": Actual and Expected Totals did not match");
 				jungle.backAndRefresh();
 			}
+			
 			softAssert.assertAll();
 		} 
 		catch (Exception e) {
 			System.out.println(e);
 		}
-		finally {
-			Browser.close();
-		}
-	}
-	
-	private void setAllStates() {
-		try {
-		JunglePage jungle = new JunglePage(Browser.driver());
-		jungle.get();
-		allStates = jungle.getAllStates();
-		} 
-		catch (Exception e) {
-			System.out.println(e);
-		}
-		finally {
-			Browser.close();
-		}
 	}
 
-	@Test()
-	public void testZeroQuantity() {
-		try {
-			String quantity = ORDER_QUANTITY_ZERO;
-			List <String> someStates = new ArrayList <String>();
-			someStates.add("California");
-			someStates.add("North Dakota");
-			someStates.add("Alabama");
-			testSteps(someStates, quantity);
-		} 
-		catch (Exception e) {
-			System.out.println(e);
-		}
-	}
 	
 	@Test()
 	public void testTwoTypes() {
+		System.out.println("TESTING TWO TYPES");
 		try {
-			String giraffeQuantity = ORDER_QUANTITY_TWO;
-			String lionQuantity = ORDER_QUANTITY_LIMIT;
-			JunglePage jungle = new JunglePage(Browser.driver());
 			jungle.get();
+			Thread.sleep(2000);
+			String giraffeQuantity = ORDER_QUANTITY_ONE;
+			String lionQuantity = ORDER_QUANTITY_LIMIT;
 			List <String> someStates = new ArrayList <String>();
 			someStates.add("California");
 			someStates.add("North Dakota");
@@ -115,29 +111,23 @@ public class JungleTest {
 			System.out.println(e);
 		}
 		finally {
-			Browser.close();
-		}	
-	}
-	@Test
-	public void testNegativeQuantity() {
-		try {
-			String quantity = ORDER_QUANTITY_NEGATIVE;
-			List <String> someStates = new ArrayList <String>();
-			someStates.add("California");
-			someStates.add("North Dakota");
-			someStates.add("Alabama");
-			testSteps(someStates, quantity);
-		}
-		catch (Exception e) {
-			System.out.println(e);
+			try {
+				Thread.sleep(1000);
+				jungle.backAndRefresh();
+			}
+			catch(Exception e) {
+				System.out.println(e);
+			}
+			
 		}
 	}
 	
-	public void testSteps(List <String> states, String quantity) {
-		JunglePage jungle = new JunglePage(Browser.driver());
-		jungle.get();
+	
+	
+	public void testSteps(JunglePage jungle, List <String> states, String quantity) {
 		try {
 			for (String oneState: states) {
+				jungle.get();
 				jungle.enterGiraffeQuantity(quantity);
 				jungle.selectState(oneState);
 				CheckoutPage checkoutPage = jungle.checkout();
@@ -152,9 +142,6 @@ public class JungleTest {
 		}
 		catch (Exception e) {
 			System.out.println(e);
-		}
-		finally {
-			Browser.close();
 		}
 	}
 
