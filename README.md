@@ -16,3 +16,10 @@ Assumption:  Code has been cloned from GitHub to subdirectory called "CodeChalle
 
 1. Change directory to "CodeChallenge"
 2. Do mvn clean -Dtest=JungleTest -Dwebdriver.chrome.driver='/path/to/chrome/driver' test
+
+
+Noteable exceptions:
+
+	// North Dakota miscalculates tax
+	
+	// Quantity 50000 causes "java.lang.NumberFormatException: For input string: "1,000,034.00" 
