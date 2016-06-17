@@ -13,7 +13,7 @@ import java.util.List;
 
 public class JungleTest {
  
-	// Notes:
+	// Testing Notes:
 	// North Dakota miscalculates tax
 	// Quantity 50000 causes "java.lang.NumberFormatException: For input string: "1,000,034.00" "
 	
@@ -21,20 +21,23 @@ public class JungleTest {
 	final static String ORDER_QUANTITY_ONE = "1";
 	final static String ORDER_QUANTITY_TWO = "2";
 	final static String ORDER_QUANTITY_LIMIT = "50000";
+	final static String ORDER_QUANTITY_NEGATIVE = "-1";
+	
 	
 	SoftAssert softAssert = new SoftAssert();
+	List <String> allStates = new ArrayList <String>();
+	
 	
 	@Test()
 	public void testAllStates() {
 		String quantity = ORDER_QUANTITY_TWO;
-		
-		JunglePage jungle = new JunglePage(Browser.driver());
-		jungle.get();
-		List <String> allStates = jungle.getAllStates();
-		
 		try {
+			String giraffeQuantity = ORDER_QUANTITY_TWO;
+			JunglePage jungle = new JunglePage(Browser.driver());
+			jungle.get();
+			List <String> allStates = jungle.getAllStates();
 			for (String oneState: allStates) {
-				jungle.enterGiraffeQuantity(quantity);
+				jungle.enterGiraffeQuantity(giraffeQuantity);
 				jungle.selectState(oneState);
 				CheckoutPage checkoutPage = jungle.checkout();
 				checkoutPage.get();
@@ -44,7 +47,6 @@ public class JungleTest {
 						total ,oneState + ": Actual and Expected Totals did not match");
 				jungle.backAndRefresh();
 			}
-
 			softAssert.assertAll();
 		} 
 		catch (Exception e) {
@@ -55,35 +57,33 @@ public class JungleTest {
 		}
 	}
 	
-	@Test()
-	public void testZeroQuantity() {
+	private void setAllStates() {
 		try {
-			String quantity = ORDER_QUANTITY_ZERO;
-			JunglePage jungle = new JunglePage(Browser.driver());
-			jungle.get();
-			List <String> someStates = new ArrayList <String>();
-			someStates.add("California");
-			someStates.add("North Dakota");
-			someStates.add("Alabama");
-			for (String oneState: someStates) {
-				jungle.enterGiraffeQuantity(quantity);
-				jungle.selectState(oneState);
-				CheckoutPage checkoutPage = jungle.checkout();
-				checkoutPage.get();
-				float subTotal = Float.parseFloat(checkoutPage.getSubtotal().replace("$", ""));
-				float total = Float.parseFloat(checkoutPage.getTotal().replace("$", ""));
-				softAssert.assertEquals(calculateExpectedTotal(oneState, subTotal),  
-						total ,oneState + ": Actual and Expected Totals did not match");
-				jungle.backAndRefresh();
-			}
-			softAssert.assertAll();
+		JunglePage jungle = new JunglePage(Browser.driver());
+		jungle.get();
+		allStates = jungle.getAllStates();
 		} 
 		catch (Exception e) {
 			System.out.println(e);
 		}
 		finally {
 			Browser.close();
-		}	
+		}
+	}
+
+	@Test()
+	public void testZeroQuantity() {
+		try {
+			String quantity = ORDER_QUANTITY_ZERO;
+			List <String> someStates = new ArrayList <String>();
+			someStates.add("California");
+			someStates.add("North Dakota");
+			someStates.add("Alabama");
+			testSteps(someStates, quantity);
+		} 
+		catch (Exception e) {
+			System.out.println(e);
+		}
 	}
 	
 	@Test()
@@ -117,6 +117,45 @@ public class JungleTest {
 		finally {
 			Browser.close();
 		}	
+	}
+	@Test
+	public void testNegativeQuantity() {
+		try {
+			String quantity = ORDER_QUANTITY_NEGATIVE;
+			List <String> someStates = new ArrayList <String>();
+			someStates.add("California");
+			someStates.add("North Dakota");
+			someStates.add("Alabama");
+			testSteps(someStates, quantity);
+		}
+		catch (Exception e) {
+			System.out.println(e);
+		}
+	}
+	
+	public void testSteps(List <String> states, String quantity) {
+		JunglePage jungle = new JunglePage(Browser.driver());
+		jungle.get();
+		try {
+			for (String oneState: states) {
+				jungle.enterGiraffeQuantity(quantity);
+				jungle.selectState(oneState);
+				CheckoutPage checkoutPage = jungle.checkout();
+				checkoutPage.get();
+				float subTotal = Float.parseFloat(checkoutPage.getSubtotal().replace("$", ""));
+				float total = Float.parseFloat(checkoutPage.getTotal().replace("$", ""));
+				softAssert.assertEquals(calculateExpectedTotal(oneState, subTotal),  
+						total ,oneState + ": Actual and Expected Totals did not match");
+				jungle.backAndRefresh();
+			}
+			softAssert.assertAll();
+		}
+		catch (Exception e) {
+			System.out.println(e);
+		}
+		finally {
+			Browser.close();
+		}
 	}
 
 	private Float calculateExpectedTotal(String oneState, float subTotal) {

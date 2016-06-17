@@ -10,7 +10,7 @@ import org.testng.Assert;
 
 
 public class CheckoutPage extends LoadableComponent<CheckoutPage> {
-	
+    
     @FindBy(id = "subtotal")
     WebElement subtotal;
     @FindBy(id = "total")
@@ -28,12 +28,12 @@ public class CheckoutPage extends LoadableComponent<CheckoutPage> {
 	}
 	
 	
-	@Override
+    @Override
 	protected void load() {
 	    // TODO Auto-generated method stub
 	}
 	
-	@Override
+    @Override
 	public void isLoaded() {
 	  Assert.assertEquals(title, driver.getTitle());
 	}
@@ -49,8 +49,6 @@ public class CheckoutPage extends LoadableComponent<CheckoutPage> {
 	public boolean pageContainsText(String text) {
 		return driver.getPageSource().contains(text);
 	}
-	
-	
 
 	public String getTitle() {
 		return driver.getTitle();
@@ -58,5 +56,9 @@ public class CheckoutPage extends LoadableComponent<CheckoutPage> {
 
 	public void refreshPage() {
 		driver.navigate().refresh();
+	}
+	
+	public void back() {
+		driver.navigate().back();
 	}
 }

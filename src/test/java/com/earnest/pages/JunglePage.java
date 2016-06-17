@@ -97,4 +97,7 @@ public class JunglePage extends LoadableComponent<JunglePage> {
 		driver.navigate().back();
 		driver.navigate().refresh();
 	}
+	public void back() {
+		driver.navigate().back();
+	}
 }
