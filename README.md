@@ -20,6 +20,12 @@ Assumption:  Code has been cloned from GitHub to subdirectory called "CodeChalle
 
 Noteable exceptions:
 
-	// North Dakota miscalculates tax
+	// North Dakota miscalculates tax - this should be caught in Unit Testing
 	
 	// Quantity 50000 causes "java.lang.NumberFormatException: For input string: "1,000,034.00" 
+
+Testability Improvements:
+
+Both pages have the same title, testing whether navigation took place by checking title is problematic
+
+The bug 
