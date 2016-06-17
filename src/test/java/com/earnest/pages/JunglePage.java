@@ -1,4 +1,4 @@
-package com.project.pages;
+package com.earnest.pages;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,35 +6,31 @@ import java.util.List;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.CacheLookup;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedCondition;
+import org.openqa.selenium.support.ui.LoadableComponent;
 import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.Assert;
 
-import com.project.pages.Browser;
+import com.earnest.pages.Browser;
 
 
-public class JunglePage {
+public class JunglePage extends LoadableComponent<JunglePage> {
 	
 	private WebDriver driver;
+    // This does not work due to element with the same id being hidden
+	//@FindBy(id = "line_item_name_giraffe")
 	
-//	@FindBy(id = "line_item_name_giraffe")
 	@FindBy(xpath = "//tr[5]/td[4]/input")
 	private WebElement giraffeTextBox;
-	
-
-//	@FindBy(xpath = "//select[@name='state']")
-//	@FindBy(name = "state")
-//	WebElement selectMenue;
-//	private Select selectState = new Select(selectMenue);
+	@FindBy(xpath = "//tr[3]/td[4]/input")
+	private WebElement lionTextBox;
 	
 	
 	@FindBy(name = "commit")
 	WebElement checkoutButton;
 	private String url = "https://jungle-socks.herokuapp.com/";
+	private static String title = "JungleSocks";
 
 	Select selectState;
 	
@@ -44,12 +40,15 @@ public class JunglePage {
 		// Initialize variable
 	}
 	
-	public void load() {
+	 @Override
+	  public void load() {
 	    Browser.open(url);
-	}
-	public void close() {
-	    this.driver.close();
-	}
+	  }
+
+	  @Override
+	  public void isLoaded() {
+	    Assert.assertEquals(title, driver.getTitle());
+	  }
 	
 	public boolean pageContainsText(String text) {
 		return driver.getPageSource().contains(text);
@@ -58,6 +57,11 @@ public class JunglePage {
 	public void enterGiraffeQuantity(String quantity) {
 		giraffeTextBox.clear();
 		giraffeTextBox.sendKeys(quantity);	
+	}
+	
+	public void enterLionQuantity(String quantity) {
+		lionTextBox.clear();
+		lionTextBox.sendKeys(quantity);	
 	}
 	
 	public void selectState(String state) {
@@ -77,16 +81,7 @@ public class JunglePage {
         		stateStrings.add(oneState);
         	}   	
         }
-        
-        for(String oneState: stateStrings){
-        	System.out.println(oneState);
-        }
 		return stateStrings;
-		
-//		this.selectMenue.click();
-//		this.selectMenue.sendKeys(state);
-//		this.selectMenue.click();
-//		selectState.selectByVisibleText(state);
 	}
 	
 	public CheckoutPage checkout() {

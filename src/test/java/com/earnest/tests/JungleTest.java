@@ -1,0 +1,143 @@
+package com.earnest.tests;
+
+import org.testng.annotations.Test;
+import org.testng.asserts.SoftAssert;
+
+import com.earnest.pages.Browser;
+import com.earnest.pages.CheckoutPage;
+import com.earnest.pages.JunglePage;
+
+import java.util.ArrayList;
+import java.util.List;
+
+
+public class JungleTest {
+ 
+	// Notes:
+	// North Dakota miscalculates tax
+	// Quantity 50000 causes "java.lang.NumberFormatException: For input string: "1,000,034.00" "
+	
+	final static String ORDER_QUANTITY_ZERO = "0";
+	final static String ORDER_QUANTITY_ONE = "1";
+	final static String ORDER_QUANTITY_TWO = "2";
+	final static String ORDER_QUANTITY_LIMIT = "50000";
+	
+	SoftAssert softAssert = new SoftAssert();
+	
+	@Test()
+	public void testAllStates() {
+		String quantity = ORDER_QUANTITY_TWO;
+		
+		JunglePage jungle = new JunglePage(Browser.driver());
+		jungle.get();
+		List <String> allStates = jungle.getAllStates();
+		
+		try {
+			for (String oneState: allStates) {
+				jungle.enterGiraffeQuantity(quantity);
+				jungle.selectState(oneState);
+				CheckoutPage checkoutPage = jungle.checkout();
+				checkoutPage.get();
+				float subTotal = Float.parseFloat(checkoutPage.getSubtotal().replace("$", ""));
+				float total = Float.parseFloat(checkoutPage.getTotal().replace("$", ""));
+				softAssert.assertEquals(calculateExpectedTotal(oneState, subTotal),  
+						total ,oneState + ": Actual and Expected Totals did not match");
+				jungle.backAndRefresh();
+			}
+
+			softAssert.assertAll();
+		} 
+		catch (Exception e) {
+			System.out.println(e);
+		}
+		finally {
+			Browser.close();
+		}
+	}
+	
+	@Test()
+	public void testZeroQuantity() {
+		try {
+			String quantity = ORDER_QUANTITY_ZERO;
+			JunglePage jungle = new JunglePage(Browser.driver());
+			jungle.get();
+			List <String> someStates = new ArrayList <String>();
+			someStates.add("California");
+			someStates.add("North Dakota");
+			someStates.add("Alabama");
+			for (String oneState: someStates) {
+				jungle.enterGiraffeQuantity(quantity);
+				jungle.selectState(oneState);
+				CheckoutPage checkoutPage = jungle.checkout();
+				checkoutPage.get();
+				float subTotal = Float.parseFloat(checkoutPage.getSubtotal().replace("$", ""));
+				float total = Float.parseFloat(checkoutPage.getTotal().replace("$", ""));
+				softAssert.assertEquals(calculateExpectedTotal(oneState, subTotal),  
+						total ,oneState + ": Actual and Expected Totals did not match");
+				jungle.backAndRefresh();
+			}
+			softAssert.assertAll();
+		} 
+		catch (Exception e) {
+			System.out.println(e);
+		}
+		finally {
+			Browser.close();
+		}	
+	}
+	
+	@Test()
+	public void testTwoTypes() {
+		try {
+			String giraffeQuantity = ORDER_QUANTITY_TWO;
+			String lionQuantity = ORDER_QUANTITY_LIMIT;
+			JunglePage jungle = new JunglePage(Browser.driver());
+			jungle.get();
+			List <String> someStates = new ArrayList <String>();
+			someStates.add("California");
+			someStates.add("North Dakota");
+			someStates.add("Alabama");
+			for (String oneState: someStates) {
+				jungle.enterGiraffeQuantity(giraffeQuantity);
+				jungle.enterLionQuantity(lionQuantity);
+				jungle.selectState(oneState);
+				CheckoutPage checkoutPage = jungle.checkout();
+				checkoutPage.get();
+				float subTotal = Float.parseFloat(checkoutPage.getSubtotal().replace("$", ""));
+				float total = Float.parseFloat(checkoutPage.getTotal().replace("$", ""));
+				softAssert.assertEquals(calculateExpectedTotal(oneState, subTotal),  
+						total ,oneState + ": Actual and Expected Totals did not match");
+				jungle.backAndRefresh();
+			}
+			softAssert.assertAll();
+		} 
+		catch (Exception e) {
+			System.out.println(e);
+		}
+		finally {
+			Browser.close();
+		}	
+	}
+
+	private Float calculateExpectedTotal(String oneState, float subTotal) {
+		float tax = (float) -1000.00;
+		if (oneState.equals("California")) {
+			tax = (float) (subTotal * 0.08);
+		}
+		else if (oneState.equals("Minnesota")){
+			tax = (float) (subTotal * 0.00);
+		}
+		
+		else if (oneState.equals("New York")) {
+			tax = (float) (subTotal * 0.06);
+		}
+		
+		else {
+			tax = (float) (subTotal * 0.05);
+		}	
+		float expectedTotal = (float) subTotal + tax;
+		return expectedTotal;
+	}
+
+}
+

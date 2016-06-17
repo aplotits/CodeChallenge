@@ -1,13 +1,11 @@
-package com.project.pages;
+package com.earnest.pages;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
 
 public class Browser {
-	private static WebDriver driver = new ChromeDriver();
-	
-	public static WebDriver driver() {
+    private static WebDriver driver = new ChromeDriver();
+    public static WebDriver driver() {
     return driver;
   }
 

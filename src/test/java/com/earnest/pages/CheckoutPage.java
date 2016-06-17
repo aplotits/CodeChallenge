@@ -1,19 +1,15 @@
-package com.project.pages;
+package com.earnest.pages;
 
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.firefox.FirefoxDriver;
-import org.openqa.selenium.support.CacheLookup;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedCondition;
-import org.openqa.selenium.support.ui.Select;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.openqa.selenium.support.ui.LoadableComponent;
+import org.testng.Assert;
 
 
-public class CheckoutPage {
+public class CheckoutPage extends LoadableComponent<CheckoutPage> {
 	
     @FindBy(id = "subtotal")
     WebElement subtotal;
@@ -22,6 +18,7 @@ public class CheckoutPage {
 
 	private WebDriver driver;
 	private String url = "https://jungle-socks.herokuapp.com/checkout/create";
+	private static String title = "JungleSocks";
 
 	
 	public CheckoutPage(WebDriver driver) {
@@ -30,11 +27,15 @@ public class CheckoutPage {
 		PageFactory.initElements(driver, this);
 	}
 	
-//	public void load() {
-//	    this.driver.get(url);
-//	}
-	public void close() {
-	    this.driver.close();
+	
+	@Override
+	protected void load() {
+	    // TODO Auto-generated method stub
+	}
+	
+	@Override
+	public void isLoaded() {
+	  Assert.assertEquals(title, driver.getTitle());
 	}
 	
 	public String getSubtotal() {
