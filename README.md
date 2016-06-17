@@ -28,4 +28,3 @@ Testability Improvements:
 
 Both pages have the same title, testing whether navigation took place by checking title is problematic
 
-The bug 
