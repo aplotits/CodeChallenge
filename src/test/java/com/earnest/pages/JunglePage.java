@@ -23,9 +23,8 @@ import com.earnest.pages.Browser;
 public class JunglePage extends LoadableComponent<JunglePage> {
 	
 	private WebDriver driver;
-    // This does not work due to element with the same id being hidden
-	//@FindBy(id = "line_item_name_giraffe")
-	@FindBy(xpath = "//tr[5]/td[4]/input")
+	@FindBy(id = "line_item_quantity_giraffe")
+//	@FindBy(xpath = "//tr[5]/td[4]/input")
 	private WebElement giraffeTextBox;
 	
 	@FindBy(xpath = "//tr[3]/td[4]/input")
